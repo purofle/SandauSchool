@@ -25,8 +25,8 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import com.github.purofle.sandauschool.R
-import com.github.purofle.sandauschool.service.courseManagementService
-import com.github.purofle.sandauschool.service.newEHallService
+import com.github.purofle.sandauschool.network.courseManagementService
+import com.github.purofle.sandauschool.network.newEHallService
 
 class MainActivity : ComponentActivity() {
     @OptIn(ExperimentalMaterial3Api::class)
@@ -69,7 +69,7 @@ class MainActivity : ComponentActivity() {
                         Text("当前是第 $currentTeachWeek 教学周")
 
                         Button({
-                            startActivity(Intent(context, AuthActivity::class.java))
+                            startActivity(Intent(context, LoginActivity::class.java))
                         }) {
                             Text(stringResource(R.string.login))
                         }

@@ -1,6 +1,7 @@
 package com.github.purofle.sandauschool.service
 
 import com.github.purofle.sandauschool.crypto.LZ4K
+import com.github.purofle.sandauschool.network.authService
 import okhttp3.ResponseBody
 import retrofit2.Response
 import java.net.URLEncoder
@@ -47,7 +48,6 @@ object LoginService {
             encryptPassword(password, authInfo.salt),
             execution = authInfo.execution
         )
-
         return resp
     }
 
@@ -84,4 +84,6 @@ object LoginService {
 
     const val AUTH_PAGE_URL =
         "https://authserver.sandau.edu.cn/authserver/login?service=https%3A%2F%2Fnewehall.sandau.edu.cn%2Fywtb-portal%2Fofficial%2Findex.html%3Fbrowser%3Dno%23%2Fhome%2Fofficial_home"
+
+    const val TAG = "LoginService"
 }
