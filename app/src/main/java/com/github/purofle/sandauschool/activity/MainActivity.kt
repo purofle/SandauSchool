@@ -62,7 +62,8 @@ class MainActivity : ComponentActivity() {
 
                         LaunchedEffect(Unit) {
                             try {
-                                retry(onError = { attempt, _ ->
+                                retry(onError = { attempt, err ->
+                                    err.printStackTrace()
                                     Log.e(
                                         TAG,
                                         "failed to get data, try to login...(retry $attempt)"
@@ -83,6 +84,12 @@ class MainActivity : ComponentActivity() {
                                     loginCount = courseManagementService.getLoginCount()
                                     currentTeachWeek =
                                         courseManagementService.getCurrentTeachWeek().weekIndex
+                                    val course = courseManagementService.getSemesterFromHtml(
+                                        courseManagementService.getCourseTable().body()?.string()
+                                            .orEmpty()
+                                    )
+
+                                    Log.d(TAG, "course: $course")
                                 }
                             } catch (e: Exception) {
                                 e.printStackTrace()

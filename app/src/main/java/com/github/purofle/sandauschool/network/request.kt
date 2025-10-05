@@ -14,7 +14,7 @@ val client = OkHttpClient.Builder()
     .build()
 
 val json = Json {
-
+    ignoreUnknownKeys = true
 }
 
 val newEHallRetrofit: Retrofit = Retrofit.Builder()
