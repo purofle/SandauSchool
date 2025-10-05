@@ -2,6 +2,7 @@ package com.github.purofle.sandauschool.activity
 
 import android.content.Intent
 import android.os.Bundle
+import android.util.Log
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
@@ -24,9 +25,15 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
+import com.github.purofle.sandauschool.Preference
+import com.github.purofle.sandauschool.Preference.dataStore
 import com.github.purofle.sandauschool.R
 import com.github.purofle.sandauschool.network.courseManagementService
 import com.github.purofle.sandauschool.network.newEHallService
+import com.github.purofle.sandauschool.service.LoginService
+import com.github.purofle.sandauschool.utils.retry
+import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.flow.map
 
 class MainActivity : ComponentActivity() {
     @OptIn(ExperimentalMaterial3Api::class)
@@ -55,10 +62,28 @@ class MainActivity : ComponentActivity() {
 
                         LaunchedEffect(Unit) {
                             try {
-                                newEHallService.getAppPage(7328727903036396) // get cookie
-                                cardBalance = newEHallService.getYktData().data.balance
-                                loginCount = courseManagementService.getLoginCount()
-                                currentTeachWeek = courseManagementService.getCurrentTeachWeek().weekIndex
+                                retry(onError = { attempt, _ ->
+                                    Log.e(
+                                        TAG,
+                                        "failed to get data, try to login...(retry $attempt)"
+                                    )
+                                    val username =
+                                        context.dataStore.data.map { it[Preference.USERNAME] }
+                                            .first()
+                                    val password =
+                                        context.dataStore.data.map { it[Preference.PASSWORD] }
+                                            .first()
+                                    username?.let {
+                                        LoginService.login(username, password.orEmpty())
+                                    }
+
+                                }) {
+                                    newEHallService.getAppPage(7328727903036396) // get cookie
+                                    cardBalance = newEHallService.getYktData().data.balance
+                                    loginCount = courseManagementService.getLoginCount()
+                                    currentTeachWeek =
+                                        courseManagementService.getCurrentTeachWeek().weekIndex
+                                }
                             } catch (e: Exception) {
                                 e.printStackTrace()
                             }
@@ -77,5 +102,9 @@ class MainActivity : ComponentActivity() {
                 }
             }
         }
+    }
+
+    companion object {
+        const val TAG = "MainActivity"
     }
 }
