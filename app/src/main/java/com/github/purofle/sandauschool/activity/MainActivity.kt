@@ -84,12 +84,24 @@ class MainActivity : ComponentActivity() {
                                     loginCount = courseManagementService.getLoginCount()
                                     currentTeachWeek =
                                         courseManagementService.getCurrentTeachWeek().weekIndex
-                                    val course = courseManagementService.getSemesterFromHtml(
-                                        courseManagementService.getCourseTable().body()?.string()
-                                            .orEmpty()
-                                    )
 
-                                    Log.d(TAG, "course: $course")
+                                    courseManagementService.getCourseTableHtml().body()?.string()
+                                        .orEmpty()
+                                        .let { html ->
+                                            val semester =
+                                                courseManagementService.getSemesterFromHtml(html)
+                                                    .first()
+                                            Log.d(TAG, "course: $semester")
+                                            val courseTable =
+                                                courseManagementService.getCourseTable(semester.id)
+
+                                            val timeTable = courseTable.studentTableVms
+                                                .flatMap { it.activities }
+                                                .groupBy { it.weekday }
+
+                                            Log.d(TAG, "courseTable: $timeTable")
+                                        }
+
                                 }
                             } catch (e: Exception) {
                                 e.printStackTrace()
