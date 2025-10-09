@@ -15,7 +15,7 @@ import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.map
 
 class CourseTableRepository(
-    val context: Context
+    val context: Context,
 ) {
     fun getCourseTableFlow(): Flow<List<RemoteCourse>> = flow {
         loadCourseTableLocal()?.let { emit(it) }
@@ -33,6 +33,12 @@ class CourseTableRepository(
         return json.decodeFromString(courseTableJson)
     }
 
+    fun getCurrentTeachWeekFlow(): Flow<Int> = flow {
+        emit(context.dataStore.data.map { it[Preference.currentTeachWeek] }.first()?.toInt() ?: 2)
+
+        emit(courseManagementService.getCurrentTeachWeek().weekIndex)
+    }
+
     suspend fun saveCourseTableLocal(courseTable: List<RemoteCourse>) {
         context.dataStore.edit {
             it[Preference.courseTable] = json.encodeToString(courseTable)
@@ -40,7 +46,9 @@ class CourseTableRepository(
     }
 
     suspend fun loadCourseTableRemote(): List<RemoteCourse> {
-        retry(onError = ::retryLogin) {
+        retry(onError = { attempt, exception ->
+            retryLogin(attempt, exception, context)
+        }) {
             val semesterId = courseManagementService.getCourseTableHtml().let {
                 courseManagementService.getSemesterFromHtml(
                     it.body()?.string() ?: throw Exception("courseTable is null")

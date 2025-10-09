@@ -11,31 +11,42 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Card
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.lifecycle.ViewModel
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import androidx.lifecycle.viewModelScope
+import androidx.lifecycle.viewmodel.compose.viewModel
+import com.github.purofle.sandauschool.MyApp
 import com.github.purofle.sandauschool.R
 import com.github.purofle.sandauschool.repository.CourseTableRepository
+import kotlinx.coroutines.flow.SharingStarted
+import kotlinx.coroutines.flow.stateIn
 import java.time.LocalDateTime
-import java.time.format.DateTimeFormatter
-import java.util.Locale
+
+class MainViewModel() : ViewModel() {
+    // context 似乎不是最佳方案
+    val repo = CourseTableRepository(MyApp.context)
+    val courseTable = repo.getCourseTableFlow()
+        .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), emptyList())
+    val currentTeachWeek = repo.getCurrentTeachWeekFlow()
+        .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), 2)
+}
 
 @Composable
-fun MainScreenUI() {
+fun MainScreenUI(vm: MainViewModel = viewModel()) {
+    val courseTable by vm.courseTable.collectAsStateWithLifecycle()
+    val currentTeachWeek by vm.currentTeachWeek.collectAsStateWithLifecycle()
 
-    val context = LocalContext.current
-    val courseTableRepository = CourseTableRepository(context)
-
-    val courseTable by courseTableRepository.getCourseTableFlow().collectAsState(emptyList())
-    val timeTable = courseTable.groupBy { it.weekday }
+    val timeTable = courseTable.filter { currentTeachWeek in it.weekIndexes }
+        .groupBy { it.weekday }
 
     Column(modifier = Modifier
         .fillMaxSize()
@@ -49,10 +60,6 @@ fun MainScreenUI() {
             in 18..23 -> R.string.good_evening
             else -> error("why are you here: ${dateTime.hour}?")
         }
-
-        val pattern = stringResource(R.string.date_pattern)
-        DateTimeFormatter.ofPattern(pattern, Locale.getDefault())
-//        val dateText = dateTime.format(formatter)
 
         Text(
             stringResource(text) + ",",

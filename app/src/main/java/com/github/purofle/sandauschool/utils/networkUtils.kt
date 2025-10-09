@@ -1,15 +1,14 @@
 package com.github.purofle.sandauschool.utils
 
+import android.content.Context
 import android.util.Log
-import com.github.purofle.sandauschool.MyApp
 import com.github.purofle.sandauschool.Preference
 import com.github.purofle.sandauschool.Preference.dataStore
 import com.github.purofle.sandauschool.service.LoginService
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.map
 
-suspend fun retryLogin(attempt: Int, exception: Throwable) {
-    val context = MyApp.context
+suspend fun retryLogin(attempt: Int, exception: Throwable, context: Context) {
     exception.printStackTrace()
     Log.e(
         "retryLogin",

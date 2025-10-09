@@ -1,7 +1,6 @@
 package com.github.purofle.sandauschool.activity
 
 import android.os.Bundle
-import android.util.Log
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
@@ -19,29 +18,18 @@ import androidx.compose.material3.NavigationBarItem
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableDoubleStateOf
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.navigation3.runtime.NavKey
 import androidx.navigation3.runtime.entryProvider
 import androidx.navigation3.runtime.rememberNavBackStack
 import androidx.navigation3.ui.NavDisplay
-import com.github.purofle.sandauschool.Preference
-import com.github.purofle.sandauschool.Preference.dataStore
 import com.github.purofle.sandauschool.R
-import com.github.purofle.sandauschool.network.courseManagementService
-import com.github.purofle.sandauschool.network.newEHallService
 import com.github.purofle.sandauschool.screen.MainScreenUI
-import com.github.purofle.sandauschool.service.LoginService
-import com.github.purofle.sandauschool.utils.retry
-import kotlinx.coroutines.flow.first
-import kotlinx.coroutines.flow.map
 import kotlinx.serialization.Serializable
 
 @Serializable
@@ -97,58 +85,6 @@ class MainActivity : ComponentActivity() {
                         }
                     }
                 ) { pd ->
-
-                    val context = LocalContext.current
-                    var cardBalance by remember { mutableDoubleStateOf(0.00) }
-                    var loginCount by remember { mutableIntStateOf(0) }
-                    var currentTeachWeek by remember { mutableIntStateOf(0) }
-                    LaunchedEffect(Unit) {
-                        try {
-                            retry(onError = { attempt, err ->
-                                err.printStackTrace()
-                                Log.e(
-                                    TAG,
-                                    "failed to get data, try to login...(retry $attempt)"
-                                )
-                                val username =
-                                    context.dataStore.data.map { it[Preference.USERNAME] }
-                                        .first()
-                                val password =
-                                    context.dataStore.data.map { it[Preference.PASSWORD] }
-                                        .first()
-                                username?.let {
-                                    LoginService.login(username, password.orEmpty())
-                                }
-
-                            }) {
-                                newEHallService.getAppPage(7328727903036396) // get cookie
-                                cardBalance = newEHallService.getYktData().data.balance
-                                loginCount = courseManagementService.getLoginCount()
-                                currentTeachWeek =
-                                    courseManagementService.getCurrentTeachWeek().weekIndex
-
-                                courseManagementService.getCourseTableHtml().body()?.string()
-                                    .orEmpty()
-                                    .let { html ->
-                                        val semester =
-                                            courseManagementService.getSemesterFromHtml(html)
-                                                .first()
-                                        Log.d(TAG, "course: $semester")
-                                        val courseTable =
-                                            courseManagementService.getCourseTable(semester.id)
-
-                                        val timeTable = courseTable.studentTableVms
-                                            .flatMap { it.activities }
-                                            .groupBy { it.weekday }
-
-                                        Log.d(TAG, "courseTable: $timeTable")
-                                    }
-                            }
-                        } catch (e: Exception) {
-                            e.printStackTrace()
-                        }
-                    }
-
                     NavDisplay(
                         backStack = backStack,
                         onBack = { backStack.removeLastOrNull() },
@@ -167,9 +103,5 @@ class MainActivity : ComponentActivity() {
                 }
             }
         }
-    }
-
-    companion object {
-        const val TAG = "MainActivity"
     }
 }

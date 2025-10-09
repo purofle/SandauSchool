@@ -1,8 +1,10 @@
 package com.github.purofle.sandauschool.utils
 
-suspend inline fun <T> retry(
+import kotlinx.coroutines.CancellationException
+
+inline fun <T> retry(
     times: Int = 3,
-    onError: suspend (attempt: Int, exception: Throwable) -> Unit,
+    onError: (attempt: Int, exception: Throwable) -> Unit,
     block: () -> T
 ): T {
 
@@ -10,6 +12,9 @@ suspend inline fun <T> retry(
         try {
             return block()
         } catch (e: Exception) {
+            if (e is CancellationException) {
+                throw e
+            }
             onError(attempt + 1, e)
             if (attempt == times - 1) {
                 throw e

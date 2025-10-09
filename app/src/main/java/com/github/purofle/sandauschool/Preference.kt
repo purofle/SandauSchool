@@ -13,5 +13,7 @@ object Preference {
 
     val courseTable = stringPreferencesKey("courseTable")
 
+    val currentTeachWeek = stringPreferencesKey("currentTeachWeek")
+
     val Context.dataStore: DataStore<Preferences> by preferencesDataStore(name = "userdata")
 }
