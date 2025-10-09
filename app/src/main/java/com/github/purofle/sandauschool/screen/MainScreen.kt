@@ -1,14 +1,19 @@
 package com.github.purofle.sandauschool.screen
 
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.material3.Card
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
@@ -46,8 +51,8 @@ fun MainScreenUI() {
         }
 
         val pattern = stringResource(R.string.date_pattern)
-        val formatter = DateTimeFormatter.ofPattern(pattern, Locale.getDefault())
-        val dateText = dateTime.format(formatter)
+        DateTimeFormatter.ofPattern(pattern, Locale.getDefault())
+//        val dateText = dateTime.format(formatter)
 
         Text(
             stringResource(text) + ",",
@@ -57,7 +62,34 @@ fun MainScreenUI() {
         Text("日落果", style = TextStyle(fontSize = 28.sp))
         Spacer(modifier = Modifier.height(16.dp))
         val todayTimeTable = timeTable[dateTime.dayOfWeek.value]
-        Text("今天是 $dateText，今日的课程有：$todayTimeTable")
+
+        todayTimeTable?.forEach { course ->
+            Card(modifier = Modifier
+                .fillMaxWidth()
+                .padding(8.dp)) {
+                Row(
+                    verticalAlignment = Alignment.CenterVertically,
+                    horizontalArrangement = Arrangement.SpaceBetween,
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(12.dp, 12.dp, 12.dp, 0.dp)
+                ) {
+                    Text("${course.name} (${course.teachers.joinToString(",")})")
+                    Text("${course.room}教室")
+                }
+
+                Row(
+                    verticalAlignment = Alignment.CenterVertically,
+                    horizontalArrangement = Arrangement.SpaceBetween,
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(12.dp, 0.dp, 12.dp, 12.dp)
+                ) {
+                    Text(course.startTime)
+                    Text(course.endTime)
+                }
+            }
+        }
     }
 }
 
