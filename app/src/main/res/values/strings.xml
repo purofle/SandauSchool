@@ -3,4 +3,8 @@
     <string name="login">Login</string>
     <string name="input_student_id">Please enter Student ID</string>
     <string name="input_password">Please enter password</string>
+    <string name="good_morning">Good morning</string>
+    <string name="good_afternoon">Good afternoon</string>
+    <string name="good_evening">Good evening</string>
+    <string name="date_pattern">MMM d (EEE)</string>
 </resources>

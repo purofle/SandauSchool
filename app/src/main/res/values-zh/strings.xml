@@ -4,4 +4,8 @@
     <string name="login">登录</string>
     <string name="input_student_id">请输入学号</string>
     <string name="input_password">请输入密码</string>
+    <string name="good_morning">早上好</string>
+    <string name="good_afternoon">中午好</string>
+    <string name="good_evening">晚上好</string>
+    <string name="date_pattern">M 月 d 日EEE</string>
 </resources>
