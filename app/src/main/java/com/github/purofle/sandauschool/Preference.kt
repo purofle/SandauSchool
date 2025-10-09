@@ -11,5 +11,7 @@ object Preference {
     val USERNAME = stringPreferencesKey("username")
     val PASSWORD = stringPreferencesKey("password")
 
+    val courseTable = stringPreferencesKey("courseTable")
+
     val Context.dataStore: DataStore<Preferences> by preferencesDataStore(name = "userdata")
 }

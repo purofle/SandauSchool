@@ -1,8 +1,8 @@
 package com.github.purofle.sandauschool.utils
 
-inline fun <T> retry(
+suspend inline fun <T> retry(
     times: Int = 3,
-    onError: (attempt: Int, exception: Exception) -> Unit = { _, _ -> },
+    onError: suspend (attempt: Int, exception: Throwable) -> Unit,
     block: () -> T
 ): T {
 
