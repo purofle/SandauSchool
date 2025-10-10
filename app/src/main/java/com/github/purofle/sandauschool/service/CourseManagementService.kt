@@ -29,7 +29,7 @@ interface CourseManagementService {
         val startIndex = html.lineSequence()
             .indexOfFirst { "var semesters = JSON.parse(" in it }
 
-        if (startIndex == -1) return emptyList()
+        if (startIndex == -1) throw Exception("failed to get semester")
 
         val jsonLine = html.lineSequence()
             .drop(startIndex + 1)

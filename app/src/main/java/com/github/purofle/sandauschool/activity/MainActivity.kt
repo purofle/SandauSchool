@@ -1,15 +1,20 @@
 package com.github.purofle.sandauschool.activity
 
 import android.os.Bundle
+import android.util.Log
+import android.webkit.CookieManager
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Build
 import androidx.compose.material.icons.filled.DateRange
 import androidx.compose.material.icons.filled.Home
+import androidx.compose.material.icons.outlined.Build
 import androidx.compose.material.icons.outlined.DateRange
 import androidx.compose.material.icons.outlined.Home
+import androidx.compose.material3.Button
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
@@ -38,6 +43,9 @@ data object MainScreen : NavKey
 @Serializable
 data object TimeTableScreen : NavKey
 
+@Serializable
+data object DebugScreen : NavKey
+
 class MainActivity : ComponentActivity() {
     @OptIn(ExperimentalMaterial3Api::class)
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -47,10 +55,11 @@ class MainActivity : ComponentActivity() {
             MaterialTheme {
 
                 var selectedItem by remember { mutableIntStateOf(0) }
-                val items = listOf("Home", "Timetable")
-                val selectedIcons = listOf(Icons.Filled.Home, Icons.Filled.DateRange)
+                val items = listOf("Home", "Timetable", "Debug")
+                val selectedIcons =
+                    listOf(Icons.Filled.Home, Icons.Filled.DateRange, Icons.Filled.Build)
                 val unselectedIcons =
-                    listOf(Icons.Outlined.Home, Icons.Outlined.DateRange)
+                    listOf(Icons.Outlined.Home, Icons.Outlined.DateRange, Icons.Outlined.Build)
 
                 val backStack = rememberNavBackStack(MainScreen)
 
@@ -78,6 +87,7 @@ class MainActivity : ComponentActivity() {
                                         when (selectedItem) {
                                             0 -> backStack.add(MainScreen)
                                             1 -> backStack.add(TimeTableScreen)
+                                            2 -> backStack.add(DebugScreen)
                                         }
                                     },
                                 )
@@ -97,11 +107,22 @@ class MainActivity : ComponentActivity() {
 
                             }
 
+                            entry(DebugScreen) {
+                                Button(onClick = {
+                                    CookieManager.getInstance().removeAllCookies {
+                                        Log.d(TAG, "remove all cookies")
+                                    }
+                                }) { Text("Clean cookie") }
+                            }
                         },
                         modifier = Modifier.padding(pd)
                     )
                 }
             }
         }
+    }
+
+    companion object {
+        const val TAG = "MainActivity"
     }
 }
