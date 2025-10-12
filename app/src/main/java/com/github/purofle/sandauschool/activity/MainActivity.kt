@@ -35,6 +35,7 @@ import androidx.navigation3.runtime.rememberNavBackStack
 import androidx.navigation3.ui.NavDisplay
 import com.github.purofle.sandauschool.R
 import com.github.purofle.sandauschool.screen.MainScreenUI
+import com.github.purofle.sandauschool.screen.TimeTableScreenUI
 import kotlinx.serialization.Serializable
 
 @Serializable
@@ -104,7 +105,7 @@ class MainActivity : ComponentActivity() {
                             }
 
                             entry(TimeTableScreen) {
-
+                                TimeTableScreenUI()
                             }
 
                             entry(DebugScreen) {

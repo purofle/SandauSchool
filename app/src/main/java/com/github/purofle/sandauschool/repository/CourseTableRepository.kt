@@ -41,6 +41,8 @@ class CourseTableRepository(
         emit(fetchDataOrLogin(context) {
             courseManagementService.getCurrentTeachWeek().weekIndex
         })
+
+        emit(courseManagementService.getCurrentTeachWeek().weekIndex)
     }
 
     suspend fun saveCourseTableLocal(courseTable: List<RemoteCourse>) {
