@@ -30,6 +30,7 @@ import com.github.purofle.sandauschool.repository.CourseTableRepository
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.stateIn
 import java.time.LocalDateTime
+import java.util.Locale
 
 class MainViewModel() : ViewModel() {
     // context 似乎不是最佳方案
@@ -66,9 +67,22 @@ fun MainScreenUI(vm: MainViewModel = viewModel()) {
             style = TextStyle(fontSize = 28.sp),
             fontWeight = FontWeight.Bold
         )
-        Text("日落果", style = TextStyle(fontSize = 28.sp))
+        Text(stringResource(R.string.purofle), style = TextStyle(fontSize = 28.sp))
         Spacer(modifier = Modifier.height(16.dp))
         val todayTimeTable = timeTable[dateTime.dayOfWeek.value]
+
+        Text(
+            "今天是${
+                dateTime.dayOfWeek.getDisplayName(
+                    java.time.format.TextStyle.SHORT,
+                    Locale.getDefault()
+                )
+            }，第 $currentTeachWeek 教学周"
+        )
+
+        if (todayTimeTable.isNullOrEmpty()) {
+            Text("今日暂无课程~")
+        }
 
         todayTimeTable?.forEach { course ->
             Card(modifier = Modifier
