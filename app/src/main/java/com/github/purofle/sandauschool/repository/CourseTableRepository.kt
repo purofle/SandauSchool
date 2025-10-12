@@ -17,14 +17,21 @@ class CourseTableRepository(
     val context: Context,
 ) {
     fun getCourseTableFlow(): Flow<List<RemoteCourse>> = flow {
-        loadCourseTableLocal()?.let { emit(it) }
+        val courseTable = loadCourseTableLocal()
+        if (courseTable != null) {
+            emit(courseTable)
+            return@flow
+        }
 
         val remoteCourseTable = fetchDataOrLogin(context) {
             loadCourseTableRemote()
         }
 
         emit(remoteCourseTable)
-        saveCourseTableLocal(remoteCourseTable)
+        context.dataStore.edit {
+            it[Preference.courseTable] = json.encodeToString(courseTable)
+        }
+        return@flow
     }
 
     suspend fun loadCourseTableLocal(): List<RemoteCourse>? {
@@ -36,18 +43,20 @@ class CourseTableRepository(
     }
 
     fun getCurrentTeachWeekFlow(): Flow<Int> = flow {
-        emit(context.dataStore.data.map { it[Preference.currentTeachWeek] }.first()?.toInt() ?: 2)
+        val currentTeachWeek =
+            context.dataStore.data.map { it[Preference.currentTeachWeek] }.first()
 
-        emit(fetchDataOrLogin(context) {
+        if (currentTeachWeek != null) {
+            emit(currentTeachWeek)
+            return@flow
+        }
+
+        val remoteCourseTable = fetchDataOrLogin(context) {
             courseManagementService.getCurrentTeachWeek().weekIndex
-        })
-
-        emit(courseManagementService.getCurrentTeachWeek().weekIndex)
-    }
-
-    suspend fun saveCourseTableLocal(courseTable: List<RemoteCourse>) {
+        }
+        emit(remoteCourseTable)
         context.dataStore.edit {
-            it[Preference.courseTable] = json.encodeToString(courseTable)
+            it[Preference.currentTeachWeek] = remoteCourseTable
         }
     }
 
