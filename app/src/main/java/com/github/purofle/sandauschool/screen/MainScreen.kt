@@ -84,7 +84,18 @@ fun MainScreenUI(vm: MainViewModel = viewModel()) {
             Text("今日暂无课程~")
         }
 
-        todayTimeTable?.forEach { course ->
+        todayTimeTable?.sortedBy { course ->
+            // Parse non-zero padded time (e.g., "9:00" or "13:30") to comparable integer
+            // Convert "H:MM" to minutes since midnight for efficient sorting
+            val parts = course.startTime.split(":")
+            if (parts.size == 2) {
+                val hours = parts[0].toIntOrNull() ?: 0
+                val minutes = parts[1].toIntOrNull() ?: 0
+                hours * 60 + minutes
+            } else {
+                0
+            }
+        }?.forEach { course ->
             Card(modifier = Modifier
                 .fillMaxWidth()
                 .padding(8.dp)) {
