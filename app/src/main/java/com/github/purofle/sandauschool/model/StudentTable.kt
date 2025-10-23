@@ -1,7 +1,14 @@
 package com.github.purofle.sandauschool.model
 
+import kotlinx.serialization.KSerializer
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
+import kotlinx.serialization.SerializationException
+import kotlinx.serialization.descriptors.PrimitiveKind
+import kotlinx.serialization.descriptors.PrimitiveSerialDescriptor
+import kotlinx.serialization.descriptors.SerialDescriptor
+import kotlinx.serialization.encoding.Decoder
+import kotlinx.serialization.encoding.Encoder
 
 
 @Serializable
@@ -18,7 +25,8 @@ data class StudentTableVm(
 data class RemoteCourse(
     @SerialName("courseName") val name: String,
     val weekIndexes: List<Int>,
-    val room: Int,
+    @Serializable(with = RoomSerializer::class)
+    val room: String,
     val teachers: List<String>,
     val startTime: String,
     val endTime: String,
@@ -26,3 +34,20 @@ data class RemoteCourse(
     val endUnit: Int,
     val weekday: Int,
 )
+
+object RoomSerializer : KSerializer<String> {
+    override val descriptor: SerialDescriptor =
+        PrimitiveSerialDescriptor("room", PrimitiveKind.STRING)
+
+    override fun serialize(encoder: Encoder, value: String) {
+        encoder.encodeString(value)
+    }
+
+    override fun deserialize(decoder: Decoder): String {
+        return try {
+            decoder.decodeString()
+        } catch (e: SerializationException) {
+            decoder.decodeInt().toString()
+        }
+    }
+}

@@ -23,15 +23,20 @@ class CourseTableRepository(
             return@flow
         }
 
+        emit(refreshCourseTable())
+        return@flow
+    }
+
+    suspend fun refreshCourseTable(): List<RemoteCourse> {
         val remoteCourseTable = fetchDataOrLogin(context) {
             loadCourseTableRemote()
         }
 
-        emit(remoteCourseTable)
         context.dataStore.edit {
-            it[Preference.courseTable] = json.encodeToString(courseTable)
+            it[Preference.courseTable] = json.encodeToString(remoteCourseTable)
         }
-        return@flow
+
+        return remoteCourseTable
     }
 
     suspend fun loadCourseTableLocal(): List<RemoteCourse>? {
@@ -48,7 +53,6 @@ class CourseTableRepository(
 
         if (currentTeachWeek != null) {
             emit(currentTeachWeek)
-            return@flow
         }
 
         val remoteCourseTable = fetchDataOrLogin(context) {

@@ -6,6 +6,7 @@ import android.webkit.CookieManager
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Build
@@ -26,6 +27,7 @@ import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
@@ -34,8 +36,10 @@ import androidx.navigation3.runtime.entryProvider
 import androidx.navigation3.runtime.rememberNavBackStack
 import androidx.navigation3.ui.NavDisplay
 import com.github.purofle.sandauschool.R
+import com.github.purofle.sandauschool.repository.CourseTableRepository
 import com.github.purofle.sandauschool.screen.MainScreenUI
 import com.github.purofle.sandauschool.screen.TimeTableScreenUI
+import kotlinx.coroutines.launch
 import kotlinx.serialization.Serializable
 
 @Serializable
@@ -96,6 +100,9 @@ class MainActivity : ComponentActivity() {
                         }
                     }
                 ) { pd ->
+
+                    val scope = rememberCoroutineScope()
+
                     NavDisplay(
                         backStack = backStack,
                         onBack = { backStack.removeLastOrNull() },
@@ -109,11 +116,19 @@ class MainActivity : ComponentActivity() {
                             }
 
                             entry(DebugScreen) {
-                                Button(onClick = {
-                                    CookieManager.getInstance().removeAllCookies {
-                                        Log.d(TAG, "remove all cookies")
-                                    }
-                                }) { Text("Clean cookie") }
+                                Column {
+                                    Button(onClick = {
+                                        CookieManager.getInstance().removeAllCookies {
+                                            Log.d(TAG, "remove all cookies")
+                                        }
+                                    }) { Text("Clean cookie") }
+
+                                    Button(onClick = {
+                                        scope.launch {
+                                            CourseTableRepository(this@MainActivity).refreshCourseTable()
+                                        }
+                                    }) { Text("刷新课程表") }
+                                }
                             }
                         },
                         modifier = Modifier.padding(pd)
