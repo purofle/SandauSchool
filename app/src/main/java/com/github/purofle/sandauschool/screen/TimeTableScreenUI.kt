@@ -22,11 +22,13 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
+import com.github.purofle.sandauschool.R
 import com.github.purofle.sandauschool.model.RemoteCourse
 
 @Composable
@@ -38,7 +40,13 @@ fun TimeTableScreenUI(vm: MainViewModel = viewModel()) {
     val timeTable = courseTable
         .filter { currentTeachWeek in it.weekIndexes }
 
-    val weekdayNames = listOf("周一", "周二", "周三", "周四", "周五")
+    val weekdayNames = listOf(
+        stringResource(R.string.monday),
+        stringResource(R.string.tuesday),
+        stringResource(R.string.wednesday),
+        stringResource(R.string.thursday),
+        stringResource(R.string.friday)
+    )
 
     val leftListState = rememberLazyListState()
     val rightListState = rememberLazyListState()
@@ -144,7 +152,7 @@ fun CourseCard(course: RemoteCourse, modifier: Modifier) {
                 .padding(4.dp, 2.dp)
         ) {
             Text(course.name, fontSize = 14.sp, textAlign = TextAlign.Center)
-            Text("${course.room}教室", fontSize = 12.sp)
+            Text("${course.room}${stringResource(R.string.classroom_suffix)}", fontSize = 12.sp)
         }
     }
 }
