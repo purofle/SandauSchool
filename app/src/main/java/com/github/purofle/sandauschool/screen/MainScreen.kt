@@ -72,16 +72,18 @@ fun MainScreenUI(vm: MainViewModel = viewModel()) {
         val todayTimeTable = timeTable[dateTime.dayOfWeek.value]
 
         Text(
-            "今天是${
+            stringResource(
+                R.string.today_is_week,
                 dateTime.dayOfWeek.getDisplayName(
                     java.time.format.TextStyle.SHORT,
                     Locale.getDefault()
-                )
-            }，第 $currentTeachWeek 教学周"
+                ),
+                currentTeachWeek
+            )
         )
 
         if (todayTimeTable.isNullOrEmpty()) {
-            Text("今日暂无课程~")
+            Text(stringResource(R.string.no_courses_today))
         }
 
         todayTimeTable?.sortedBy { course ->
@@ -107,7 +109,7 @@ fun MainScreenUI(vm: MainViewModel = viewModel()) {
                         .padding(12.dp, 12.dp, 12.dp, 0.dp)
                 ) {
                     Text("${course.name} (${course.teachers.joinToString(",")})")
-                    Text("${course.room}教室")
+                    Text("${course.room}${stringResource(R.string.classroom_suffix)}")
                 }
 
                 Row(
