@@ -19,7 +19,12 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.runtime.snapshotFlow
+import kotlinx.coroutines.flow.distinctUntilChanged
+import kotlinx.coroutines.flow.filter
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.style.TextAlign
@@ -43,11 +48,31 @@ fun TimeTableScreenUI(vm: MainViewModel = viewModel()) {
     val leftListState = rememberLazyListState()
     val rightListState = rememberLazyListState()
 
-    // Observe scroll changes in the RIGHT column
+    // Track which list is being scrolled by user to prevent infinite loop
+    var isLeftScrolling by remember { mutableStateOf(false) }
+    var isRightScrolling by remember { mutableStateOf(false) }
+
+    // Synchronize right column to left column
+    LaunchedEffect(leftListState) {
+        snapshotFlow { leftListState.firstVisibleItemIndex to leftListState.firstVisibleItemScrollOffset }
+            .distinctUntilChanged()
+            .filter { !isRightScrolling }
+            .collect { (index, offset) ->
+                isLeftScrolling = true
+                rightListState.scrollToItem(index, offset)
+                isLeftScrolling = false
+            }
+    }
+
+    // Synchronize left column to right column
     LaunchedEffect(rightListState) {
         snapshotFlow { rightListState.firstVisibleItemIndex to rightListState.firstVisibleItemScrollOffset }
+            .distinctUntilChanged()
+            .filter { !isLeftScrolling }
             .collect { (index, offset) ->
+                isRightScrolling = true
                 leftListState.scrollToItem(index, offset)
+                isRightScrolling = false
             }
     }
 
@@ -71,8 +96,7 @@ fun TimeTableScreenUI(vm: MainViewModel = viewModel()) {
                     Box(
                         modifier = Modifier
                             .height(courseHeight)
-                            .width(leftColumnWidth)
-                            .padding(top = courseHeight / 2),
+                            .width(leftColumnWidth),
                         contentAlignment = Alignment.Center
                     ) {
                         Text(it.toString())
