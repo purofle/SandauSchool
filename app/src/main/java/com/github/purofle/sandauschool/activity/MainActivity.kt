@@ -81,7 +81,11 @@ class MainActivity : ComponentActivity() {
             MaterialTheme(colorScheme) {
 
                 var selectedItem by remember { mutableIntStateOf(0) }
-                val items = listOf("Home", "Timetable", "Debug")
+                val items = listOf(
+                    stringResource(R.string.nav_home),
+                    stringResource(R.string.nav_timetable),
+                    stringResource(R.string.nav_debug)
+                )
                 val selectedIcons =
                     listOf(Icons.Filled.Home, Icons.Filled.DateRange, Icons.Filled.Build)
                 val unselectedIcons =
@@ -142,13 +146,13 @@ class MainActivity : ComponentActivity() {
                                         CookieManager.getInstance().removeAllCookies {
                                             Log.d(TAG, "remove all cookies")
                                         }
-                                    }) { Text("Clean cookie") }
+                                    }) { Text(stringResource(R.string.clean_cookie)) }
 
                                     Button(onClick = {
                                         scope.launch {
                                             CourseTableRepository(this@MainActivity).refreshCourseTable()
                                         }
-                                    }) { Text("刷新课程表") }
+                                    }) { Text(stringResource(R.string.refresh_course_table)) }
                                 }
                             }
                         },

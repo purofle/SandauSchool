@@ -91,46 +91,46 @@ fun MainScreenUI(vm: MainViewModel = viewModel()) {
             Spacer(modifier = Modifier.height(16.dp))
             val todayTimeTable = timeTable[dateTime.dayOfWeek.value]
 
-            Text(
-                "今天是${
-                    dateTime.dayOfWeek.getDisplayName(
-                        java.time.format.TextStyle.SHORT,
-                        Locale.getDefault()
-                    )
-                }，第 $currentTeachWeek 教学周"
+        Text(
+            stringResource(
+                R.string.today_is_week,
+                dateTime.dayOfWeek.getDisplayName(
+                    java.time.format.TextStyle.SHORT,
+                    Locale.getDefault()
+                ),
+                currentTeachWeek
             )
+        )
 
-            if (todayTimeTable.isNullOrEmpty()) {
-                Text("今日暂无课程~")
+        if (todayTimeTable.isNullOrEmpty()) {
+            Text(stringResource(R.string.no_courses_today))
+        }
+
+        todayTimeTable?.sortedBy { course ->
+            // Parse non-zero padded time (e.g., "9:00" or "13:30") to comparable integer
+            // Convert "H:MM" to minutes since midnight for efficient sorting
+            val parts = course.startTime.split(":")
+            if (parts.size == 2) {
+                val hours = parts[0].toIntOrNull() ?: 0
+                val minutes = parts[1].toIntOrNull() ?: 0
+                hours * 60 + minutes
+            } else {
+                0
             }
-
-            todayTimeTable?.sortedBy { course ->
-                // Parse non-zero padded time (e.g., "9:00" or "13:30") to comparable integer
-                // Convert "H:MM" to minutes since midnight for efficient sorting
-                val parts = course.startTime.split(":")
-                if (parts.size == 2) {
-                    val hours = parts[0].toIntOrNull() ?: 0
-                    val minutes = parts[1].toIntOrNull() ?: 0
-                    hours * 60 + minutes
-                } else {
-                    0
-                }
-            }?.forEach { course ->
-                Card(
+        }?.forEach { course ->
+            Card(modifier = Modifier
+                .fillMaxWidth()
+                .padding(8.dp)) {
+                Row(
+                    verticalAlignment = Alignment.CenterVertically,
+                    horizontalArrangement = Arrangement.SpaceBetween,
                     modifier = Modifier
                         .fillMaxWidth()
-                        .padding(8.dp)
+                        .padding(12.dp, 12.dp, 12.dp, 0.dp)
                 ) {
-                    Row(
-                        verticalAlignment = Alignment.CenterVertically,
-                        horizontalArrangement = Arrangement.SpaceBetween,
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .padding(12.dp, 12.dp, 12.dp, 0.dp)
-                    ) {
-                        Text("${course.name} (${course.teachers.joinToString(",")})")
-                        Text("${course.room}教室")
-                    }
+                    Text("${course.name} (${course.teachers.joinToString(",")})")
+                    Text("${course.room}${stringResource(R.string.classroom_suffix)}")
+                }
 
                     Row(
                         verticalAlignment = Alignment.CenterVertically,
