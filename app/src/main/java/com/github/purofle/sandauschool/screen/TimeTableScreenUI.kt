@@ -19,9 +19,14 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.layout.onSizeChanged
+import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -64,15 +69,20 @@ fun TimeTableScreenUI(vm: MainViewModel = viewModel()) {
         val eachColumnWidth = rightWidth / columnCount
 
         val courseHeight = 120.dp
+        val density = LocalDensity.current
+
+        var stickyHeaderHeight by remember { mutableStateOf(40.dp) }
 
         Row {
             LazyColumn(state = leftListState) {
+                item {
+                    Spacer(modifier = Modifier.height(stickyHeaderHeight))
+                }
                 items((1..12).toList()) {
                     Box(
                         modifier = Modifier
                             .height(courseHeight)
-                            .width(leftColumnWidth)
-                            .padding(top = courseHeight / 2),
+                            .width(leftColumnWidth),
                         contentAlignment = Alignment.Center
                     ) {
                         Text(it.toString())
@@ -82,7 +92,9 @@ fun TimeTableScreenUI(vm: MainViewModel = viewModel()) {
 
             LazyColumn(state = rightListState) {
                 stickyHeader {
-                    Row {
+                    Row(modifier = Modifier.onSizeChanged { size ->
+                        stickyHeaderHeight = with(density) { size.height.toDp() }
+                    }) {
                         weekdayNames.forEach { weekday ->
                             Card(
                                 modifier = Modifier
