@@ -45,6 +45,8 @@ import com.github.purofle.sandauschool.R
 import com.github.purofle.sandauschool.repository.CourseTableRepository
 import com.github.purofle.sandauschool.screen.MainScreenUI
 import com.github.purofle.sandauschool.screen.TimeTableScreenUI
+import com.github.purofle.sandauschool.utils.hasFocusPermission
+import com.github.purofle.sandauschool.utils.landTest
 import kotlinx.coroutines.launch
 import kotlinx.serialization.Serializable
 
@@ -62,6 +64,9 @@ class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
+
+        Log.d(TAG, "xiaomiLand: ${hasFocusPermission(this)}")
+
         setContent {
 
             val colorScheme = when (isSystemInDarkTheme()) {
@@ -153,6 +158,12 @@ class MainActivity : ComponentActivity() {
                                             CourseTableRepository(this@MainActivity).refreshCourseTable()
                                         }
                                     }) { Text(stringResource(R.string.refresh_course_table)) }
+
+                                    Button(onClick = {
+                                        landTest(this@MainActivity)
+                                    }) {
+                                        Text("send notification")
+                                    }
                                 }
                             }
                         },
