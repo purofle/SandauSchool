@@ -144,7 +144,6 @@ fun MainScreenUI(vm: MainViewModel = viewModel()) {
                     }
                 }
             }
-
         }
 
         var rowWidth by remember { mutableStateOf(0.dp) }

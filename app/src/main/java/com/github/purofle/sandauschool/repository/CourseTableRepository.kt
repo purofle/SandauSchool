@@ -1,7 +1,6 @@
 package com.github.purofle.sandauschool.repository
 
 import android.content.Context
-import android.widget.Toast
 import androidx.datastore.preferences.core.edit
 import com.github.purofle.sandauschool.Preference
 import com.github.purofle.sandauschool.Preference.dataStore
@@ -40,6 +39,18 @@ class CourseTableRepository(
         return remoteCourseTable
     }
 
+    suspend fun refreshTeachWeek(): Int {
+        val remoteTeachWeek = fetchDataOrLogin(context) {
+            courseManagementService.getCurrentTeachWeek().weekIndex
+        }
+
+        context.dataStore.edit {
+            it[Preference.currentTeachWeek] = remoteTeachWeek
+        }
+
+        return remoteTeachWeek
+    }
+
     suspend fun loadCourseTableLocal(): List<RemoteCourse>? {
         val courseTableJson = context.dataStore.data
             .map { it[Preference.courseTable] }
@@ -56,17 +67,7 @@ class CourseTableRepository(
             emit(currentTeachWeek)
         }
 
-        try {
-            val remoteCourseTable = fetchDataOrLogin(context) {
-                courseManagementService.getCurrentTeachWeek().weekIndex
-            }
-            emit(remoteCourseTable)
-            context.dataStore.edit {
-                it[Preference.currentTeachWeek] = remoteCourseTable
-            }
-        } catch (e: Exception) {
-            Toast.makeText(context, "${e.message}", Toast.LENGTH_SHORT).show()
-        }
+        emit(refreshTeachWeek())
     }
 
     /**

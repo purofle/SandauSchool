@@ -16,7 +16,7 @@ import kotlinx.serialization.json.put
 import kotlinx.serialization.json.putJsonObject
 
 class SandauBackgroundService : Service() {
-    private val channelId = "test_channel_id"
+    private val channelId = "上课进度"
     private val notificationId = 1
     private lateinit var manager: NotificationManager
     private lateinit var builder: Notification.Builder

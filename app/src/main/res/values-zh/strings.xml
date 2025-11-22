@@ -30,4 +30,5 @@
     <!-- Debug Screen -->
     <string name="clean_cookie">清除 Cookie</string>
     <string name="refresh_course_table">刷新课程表</string>
+    <string name="Refresh_week">刷新教学周</string>
 </resources>

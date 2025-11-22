@@ -29,4 +29,5 @@
     <!-- Debug Screen -->
     <string name="clean_cookie">Clean cookie</string>
     <string name="refresh_course_table">Refresh course table</string>
+    <string name="Refresh_week">Refresh week</string>
 </resources>
