@@ -1,5 +1,6 @@
 package com.github.purofle.sandauschool.activity
 
+import android.content.Intent
 import android.os.Build
 import android.os.Bundle
 import android.util.Log
@@ -162,6 +163,17 @@ class MainActivity : ComponentActivity() {
                                         }
                                     }) {
                                         Text(stringResource(R.string.Refresh_week))
+                                    }
+
+                                    Button(onClick = {
+                                        startActivity(
+                                            Intent(
+                                                this@MainActivity,
+                                                LoginActivity::class.java
+                                            )
+                                        )
+                                    }) {
+                                        Text("login")
                                     }
 
                                     Button(onClick = {
