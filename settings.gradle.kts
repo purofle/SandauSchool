@@ -21,3 +21,4 @@ dependencyResolutionManagement {
 
 rootProject.name = "Sandau School"
 include(":app")
+include(":shared")
