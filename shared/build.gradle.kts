@@ -17,6 +17,10 @@ android {
 
     namespace = "com.github.purofle.sandauschool"
     sourceSets["main"].manifest.srcFile("src/androidMain/AndroidManifest.xml")
+
+    testOptions {
+        unitTests.isReturnDefaultValues = true
+    }
 }
 
 kotlin {
@@ -40,6 +44,7 @@ kotlin {
         }
         commonMain.dependencies {
             implementation(compose.runtime)
+            implementation(libs.jetbrains.compose.components.components)
             implementation(libs.de.jensklingenberg.ktorfit.ktorfit.lib)
             implementation(libs.org.jetbrains.kotlinx.serialization.json)
         }
@@ -49,4 +54,9 @@ kotlin {
             implementation(kotlin("test-annotations-common"))
         }
     }
+}
+
+compose.resources {
+    packageOfResClass = "com.github.purofle.sandauschool.res"
+    generateResClass = auto
 }

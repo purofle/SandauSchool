@@ -12,6 +12,7 @@ retrofit = "3.0.0"
 nav3Core = "1.0.0-alpha10"
 material3AdaptiveNav3 = "1.0.0-alpha03"
 ktorfitVersion = "2.7.2"
+jetbrains-compose = "1.10.3"
 
 [libraries]
 junit = { group = "junit", name = "junit", version.ref = "junit" }
@@ -45,11 +46,13 @@ org-jetbrains-kotlinx-serialization-json = { group = "org.jetbrains.kotlinx", na
 de-jensklingenberg-ktorfit-ktorfit-lib = { group = "de.jensklingenberg.ktorfit", name = "ktorfit-lib", version.ref = "ktorfitVersion" }
 com-squareup-okhttp3-urlconnection = { group = "com.squareup.okhttp3", name = "okhttp-urlconnection", version = "5.1.0" }
 
+jetbrains-compose-components-components = { group = "org.jetbrains.compose.components", name = "components-resources", version.ref = "jetbrains-compose" }
+
 [plugins]
 android-application = { id = "com.android.application", version.ref = "agp" }
 kotlin-android = { id = "org.jetbrains.kotlin.android", version.ref = "kotlin" }
 kotlin-compose = { id = "org.jetbrains.kotlin.plugin.compose", version.ref = "kotlin" }
-jetbrains-compose = { id = "org.jetbrains.compose", version = "1.10.3" }
+jetbrains-compose = { id = "org.jetbrains.compose", version.ref = "jetbrains-compose" }
 kotlin-multiplatform = { id = "org.jetbrains.kotlin.multiplatform", version.ref = "kotlin" }
 kotlin-serialization = { id = "org.jetbrains.kotlin.plugin.serialization", version.ref = "kotlin" }
 devtools-ksp = { id = "com.google.devtools.ksp", version = "2.3.6" }
